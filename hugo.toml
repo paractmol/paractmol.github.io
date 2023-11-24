@@ -5,6 +5,9 @@ title = 'Paractmol: The ████ blog'
   series = 'series'
   tag = 'tags'
 
+[params]
+  description = "Paractmol is a blog about ████████, ████████ ████████, and ████"
+
 [module]
   [[module.imports]]
     path = "github.com/nanxiaobei/hugo-paper"

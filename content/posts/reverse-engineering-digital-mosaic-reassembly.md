@@ -23,9 +23,9 @@ If, like me, you grew up when the internet was becoming popular and we didn't ha
 
 ![The Simpsons Comic Book Guy GIF](https://media.tenor.com/5lbGbnViz4gAAAAd/the-simpsons-comic-book-guy.gif)
 
->The Deep Zoom file format is very similar to the Google Maps image format where images are broken into tiles and then displayed as required. The tiling typically follows a quadtree pattern of increasing resolution of image (in other words twice the zoom and twice the resolution).
-
 While browsing a website, I encountered an image that I wanted to save but couldn't. This was frustrating. I realized that the image was utilizing a technique resembling Deep Zoom. I observed that my browser was downloading the image in fragments, much like how Google Maps loads tiles according to X, Y coordinates and scale. The tiles are sequentially displayed, with the next tile loading immediately after the previous one.
+
+>The Deep Zoom file format is very similar to the Google Maps image format where images are broken into tiles and then displayed as required. The tiling typically follows a quadtree pattern of increasing resolution of image (in other words twice the zoom and twice the resolution).
 
 ![Downloaded tiles](/reverse-engineering-digital-mosaic-reassembly/tile-1.png)
 
@@ -39,14 +39,17 @@ During the analysis, I noticed that each piece fills its respective side in the 
 
 Great! This means I can reunite them.
 
+## Construct the URL to fetch the tiles for X and Y
+
 I have devised a plan:
 
 * Construct the URL to fetch the tiles for X and Y
 * Algorithm to download the tiles -- *which was the most fun problem* 🎢
 * Glue them together and save
 
-## Construct the URL to fetch the tiles for X and Y
-For simplicity, I decided to use the `OpenURI` module, which allows calling the `#read` method directly on the URI.
+For simplicity, I decided to use the `OpenURI` module, which allows calling the [`#read`](https://ruby-doc.org/stdlib-2.6.3/libdoc/open-uri/rdoc/OpenURI.html) method directly on the URI.
+
+>#read - reads a content referenced by self and returns the content as string. The string is extended with OpenURI::Meta. The argument options is same as #open.
 
 ```ruby
 require 'open-uri'
@@ -203,14 +206,14 @@ def save
   @image_list = Magick::ImageList.new
   @tiles ||= download
 
-  verticals = @tiles.map do |tiles|
-    image_list = Magick::ImageList.new
+  @tiles.map do |tiles|
+    vertical_list = Magick::ImageList.new
 
     tiles.each do |tile|
-      image_list.push(Magick::Image.from_blob(tile).first)
+      vertical_list.push(Magick::Image.from_blob(tile).first)
     end
 
-    @image_list.push(image_list.append(true))
+    @image_list.push(vertical_list.append(true))
   end
 
   @image_list.append(false).write("#{@scale}_#{@filename}.jpg")
