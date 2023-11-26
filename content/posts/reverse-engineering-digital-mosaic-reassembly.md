@@ -47,13 +47,7 @@ I have devised a plan:
 * Algorithm to download the tiles -- *which was the most fun problem* 🎢
 * Glue them together and save
 
-For simplicity, I decided to use the `OpenURI` module, which allows calling the [`#read`](https://ruby-doc.org/stdlib-2.6.3/libdoc/open-uri/rdoc/OpenURI.html) method directly on the URI.
-
->#read - reads a content referenced by self and returns the content as string. The string is extended with OpenURI::Meta. The argument options is same as #open.
-
 ```ruby
-require 'open-uri'
-
 RESOURCE = 'https://openseadragon.github.io/example-images/'.freeze
 
 # ....
@@ -102,8 +96,11 @@ The coordinates `x` and `y` start at **0**.
 ```
 
 We define the array where we are going to store all our pieces that we have to glue back together.
+Here, I decided to use the `OpenURI` module, which allows calling the [`#read`](https://ruby-doc.org/stdlib-2.6.3/libdoc/open-uri/rdoc/OpenURI.html) method on the URI, which returns the content of an image as a string.
 
 ```ruby
+require 'open-uri'
+
 def download
   array = []
 
